@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - Rooms In Ghent</title>
+    <link rel="stylesheet" href="~/Content/core/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/core/css/bootstrap-responsive.min.css" />
+    <script src="~/Content/core/js/jquery-1.8.3.min.js"></script>
+    @RenderSection("ExtraHeader", false)
+</head>
+<body>
+    <header class="jumbotron subhead" id="overview">
+        <div class="row">
+            <div class="span6">
+                <h1>Ghent Rooms</h1>
+                <p class="lead">Get the room that's right for you</p>
+            </div>
+        </div>
+        <div class="subnav">
+            <ul class="nav nav-pills">
+                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                <li>@Html.ActionLink("Recent", "Index", "Rooms")</li>
+                <li class="dropdown">
+                    <a href="#navbar" class="dropdown-toggle" data-toggle="dropdown">Navbar</a>
+                    <ul class="dropdown-menu"></ul>
+                </li>
+                <li><a href="#buttons">Buttons</a></li>
+                <li><a href="#forms">Forms</a></li>
+                <li><a href="#tables">Tables</a></li>
+                <li><a href="#miscellaneous">Miscellaneous</a></li>
+            </ul>
+        </div>
+    </header>
+
+    @RenderBody()
+
+    <!-- Bootstrap javascript placed at the end to load faster -->
+    <script src="~/Content/core/js/bootstrap.min.js"></script>
+</body>
+</html>
