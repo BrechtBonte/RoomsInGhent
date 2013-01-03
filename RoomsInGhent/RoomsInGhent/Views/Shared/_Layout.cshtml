@@ -3,39 +3,120 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title - Rooms In Ghent</title>
+    <title>@ViewBag.Title - Gentse Koten</title>
     <link rel="stylesheet" href="~/Content/core/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/core/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="~/Content/core/css/bootswatch.css" />
     <script src="~/Content/core/js/jquery-1.8.3.min.js"></script>
+    <script src="~/Content/core/js/application.js"></script>
+    <script src="~/Content/core/js/general.js"></script>
     @RenderSection("ExtraHeader", false)
+    <style>
+        div#scroll-fix {
+            height: 38px;
+            margin-bottom: 60px;
+        }
+    </style>
 </head>
 <body>
-    <header class="jumbotron subhead" id="overview">
-        <div class="row">
-            <div class="span6">
-                <h1>Ghent Rooms</h1>
-                <p class="lead">Get the room that's right for you</p>
+    <div class="container">
+        <header class="jumbotron subhead" id="overview">
+            <div class="row">
+                <div class="span6">
+                    <h1>Gentse Koten</h1>
+                    <p class="lead">Vindt het kot dat bij je past</p>
+                </div>
+            </div>
+            <div id="scroll-fix">
+                <div class="subnav">
+                    <ul class="nav nav-pills">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Recent", "Index", "Rooms", new { ignore = true }, null)</li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Type <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Alle", "Index", "Rooms", new { typeId = -1 }, null)</li>
+                                <li class="divider"></li>
+                                @foreach (RoomsInGhent.Models.Type type in ViewBag.Types) {
+                                    <li>@Html.ActionLink(type.Name, "Index", "Rooms", new { typeId = type.ID }, null)</li>
+                                }
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Oppervlakte <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                @foreach (KeyValuePair<int, int> pair in ViewBag.Sizes) {
+                                    if (pair.Key == -1 && pair.Value != -1) {
+                                        <li>@Html.ActionLink(string.Format("max {0}m²", pair.Value), "Index", "Rooms", new { maxSize = pair.Value }, null)</li>
+                                    }
+                                    if (pair.Key != -1 && pair.Value != -1) {
+                                        <li>@Html.ActionLink(string.Format("{0}m² - {1}m²", pair.Key, pair.Value), "Index", "Rooms", new { minSize = pair.Key, maxSize = pair.Value }, null)</li>
+                                    }
+                                    if(pair.Key != -1 && pair.Value == -1) {
+                                        <li>@Html.ActionLink(string.Format("min {0}m²", pair.Key), "Index", "Rooms", new { minSize = pair.Key }, null)</li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Prijsklasse <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                @foreach (KeyValuePair<int, int> pair in ViewBag.Prices) {
+                                    if (pair.Key == -1 && pair.Value != -1) {
+                                        <li>@Html.ActionLink(string.Format("min {0}€", pair.Value), "Index", "Rooms", new { maxPrice = pair.Value }, null)</li>
+                                    }
+                                    if (pair.Key != -1 && pair.Value != -1) {
+                                        <li>@Html.ActionLink(string.Format("{0}€ - {1}€", pair.Key, pair.Value), "Index", "Rooms", new { minPrice = pair.Key, maxPrice = pair.Value }, null)</li>
+                                    }
+                                    if (pair.Key != -1 && pair.Value == -1) {
+                                        <li>@Html.ActionLink(string.Format("max {0}€", pair.Key), "Index", "Rooms", new { minPrice = pair.Key }, null)</li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Regio <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Alle", "Index", "Rooms", new { regionId = -1 }, null)</li>
+                                <li class="divider"></li>
+                                @foreach (RoomsInGhent.Models.GentRegion region in ViewBag.Regions) {
+                                    <li>@Html.ActionLink(region.Name, "Index", "Rooms", new { region.ID }, null)</li>
+                                }
+                            </ul>
+                        </li>
+                        <li class="pull-right">
+                            @if (Request.IsAuthenticated) {
+                                @Html.ActionLink("Log Uit", "Logout", "Login")
+                            } else {
+                                @Html.ActionLink("Log In", "Index", "Login")
+                            }
+                        </li>
+                        <li class="pull-right">
+                            @if (Request.IsAuthenticated) {
+                                @Html.ActionLink("Mijn Profiel", "Index", "Users", new { id = User.Identity.Name }, null)
+                            } else {
+                                @Html.ActionLink("Registreren", "Register", "Login")
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        <div id="content">
+            @RenderBody()
+        </div>
+        <hr />
+        <div class="footer">
+            <p class="pull-right">Brecht Bonte &copy; 2012</p>
+            <div class="links pull-left">
+                @Html.ActionLink("Home", "Index", "Home")
+                @Html.ActionLink("Alle Koten", "Index", "Rooms", new { ignore = true }, null)
+                @Html.ActionLink("Over Ons", "About", "Home")
             </div>
         </div>
-        <div class="subnav">
-            <ul class="nav nav-pills">
-                <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                <li>@Html.ActionLink("Recent", "Index", "Rooms")</li>
-                <li class="dropdown">
-                    <a href="#navbar" class="dropdown-toggle" data-toggle="dropdown">Navbar</a>
-                    <ul class="dropdown-menu"></ul>
-                </li>
-                <li><a href="#buttons">Buttons</a></li>
-                <li><a href="#forms">Forms</a></li>
-                <li><a href="#tables">Tables</a></li>
-                <li><a href="#miscellaneous">Miscellaneous</a></li>
-            </ul>
-        </div>
-    </header>
 
-    @RenderBody()
-
-    <!-- Bootstrap javascript placed at the end to load faster -->
-    <script src="~/Content/core/js/bootstrap.min.js"></script>
+        <!-- Bootstrap javascript placed at the end to load faster -->
+        <script src="~/Content/core/js/bootstrap.min.js"></script>
+    </div>
 </body>
 </html>

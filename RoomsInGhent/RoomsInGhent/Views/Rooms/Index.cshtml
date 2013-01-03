@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Koten";
+}
+
+<div class="row">
+    <ul class="breadcrumb pull-left">
+        <li class="active">Koten</li>
+    </ul>
+</div>
+
+<div class="row">
+
+    <!-- Filter -->
+    <div class="span4">
+        @using (Html.BeginForm("Index", "Rooms", FormMethod.Post, new { @class = "well form-search" })) {
+            @model RoomsInGhent.Models.FilterObject
+            <fieldset>
+                <legend>Filter</legend>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Query, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.Query, new { @class = "input" })
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Type, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.DropDownListFor(m => m.Type, Model.TypeList)
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.MinPrice, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.MinPrice, new { @class = "input" })
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.MaxPrice, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.MaxPrice, new { @class = "input" })
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Included, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.CheckBoxFor(m => m.Included)
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.MinSize, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.MinSize, new { @class = "input" })
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.MaxSize, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(m => m.MaxSize, new { @class = "input" })
+                    </div>
+                </div>
+                <div class="control-group">
+                    @Html.LabelFor(m => m.Attributes, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.DropDownListFor(m => m.Attributes, Model.AttrList, new { multiple = "multiple" } )
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Filteren</button>
+                    @Html.ActionLink("Wissen", "Clear", "Rooms", new { @class = "btn" })
+                </div>
+            </fieldset>
+        }
+    </div>
+    <!-- End Filter -->
+
+    <!-- Rooms -->
+    <div class="span8">
+    @if (ViewBag.Rooms.Count > 0) {
+        <ul class="nav nav-pills">
+            <li class="disabled"><a href="#">Sorteer volgens </a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">@ViewBag.Sort.ToString() <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    @foreach (RoomsInGhent.Models.RoomSorts sort in ViewBag.Sorts) {
+                        <li>@Html.ActionLink(sort.ToString(), "Index", "Rooms", new { @sort = sort }, null)</li>
+                    }
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">@if (ViewBag.Reversed) { <text>Gekeerd</text> } else { <text>Normaal</text> }<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li>@Html.ActionLink("Normaal", "Index", "Rooms", new { reversed = false }, null)</li>
+                    <li>@Html.ActionLink("Gekeerd", "Index", "Rooms", new { reversed = true }, null)</li>
+                </ul>
+            </li>
+        </ul>
+        foreach (RoomsInGhent.Models.Room room in ViewBag.Rooms) {
+                <article class="room clearfix">
+                    <a href="@Url.Action("Detail", "Rooms", new { id = room.ID })">
+                        <figure class="pull-left span2">
+                            <img src="~/Content/files/imgs/@room.GetMainImage()" alt="kot foto" />
+                        </figure>
+                    </a>
+                    <div class="room-info">
+                        <p class="room-user pull-right">@Html.ActionLink(room.KotUser.Username, "Index", "Users", new { id = room.UserId }, null)</p>
+                        <p class="room-type"><strong>@room.GetTypeName()</strong></p>
+                        <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", room.Size), "Index", "Rooms", new { minSize = room.Size - 2, maxSize = room.Size + 2 }, null)</p>
+                        <p class="room-address">@room.Address</p>
+                        <p class="room-region">@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)</p>
+                    </div>
+                    <div class="row">
+                        <ul class="room-attributes row pull-left well well-small inline">
+                            @foreach (RoomsInGhent.Models.RoomHasAttribute attr in room.GetAttributes(4)) {
+                                <li>@Html.ActionLink(string.Format("{0}{1}", attr.GetAttributeName(), attr.Quantity != null? string.Format(" ({0})",attr.Quantity) : ""), "Index", "Rooms", new { attributes = attr.AttributeId }, null)</li>
+                            }
+                        </ul>
+                    </div>
+                    <p class="room-price pull-right">
+                        @if (room.Included) {
+                            <span class="badge badge-success" title="kosten inbegrepen">@room.Price€</span>
+                        } else {
+                            <span class="badge badge-warning" title="kosten niet inbegrepen">@room.Price€</span>
+                        }
+                    </p>
+                    @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = room.ID }, new { @class = "room-more offset2" })
+                </article>
+            }
+            <div class="pagination pagination-centered">
+                <ul>
+                    <li @if(ViewBag.Page == 1){<text>class="disabled"</text>}>@Html.ActionLink("←", "Index", "Rooms")</li>
+                    @foreach (int i in ViewBag.Pages) {
+                        <li @if(i == ViewBag.Page){<text>class="active"</text>}>@Html.ActionLink(i.ToString(), "Index", "Rooms", new { page = i }, null)</li>
+                    }
+                    <li @if(ViewBag.Page == ViewBag.LastPage){<text>class="disabled"</text>}>@Html.ActionLink("→", "Index", "Rooms", new { page = ViewBag.LastPage }, null)</li>
+                </ul>
+            </div>
+    } else {
+        <p class="no-info">Er zijn geen koten die voldoen aan uw criteria</p>
+    }
+    </div>
+    <!-- End Rooms -->
+
+</div>

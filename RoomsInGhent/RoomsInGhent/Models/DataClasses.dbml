@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="STUDENT_brecht.bonte@kahosl.be" Class="DataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=pub.ikdoeict.be,14330;Initial Catalog=STUDENT_brecht.bonte@kahosl.be;Persist Security Info=True;User ID=STUDENT_SQLHigh_brecht.bonte@kahosl.be" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="STUDENT_brecht_bonte_kahosl_beConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.KotUsers" Member="KotUsers">
+    <Type Name="KotUser">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Username" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Password" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Salt" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Phone" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="KotUser_Review" Member="Reviews" ThisKey="ID" OtherKey="UserId" Type="Review" />
+      <Association Name="KotUser_UserSavesRoom" Member="UserSavesRooms" ThisKey="ID" OtherKey="UserId" Type="UserSavesRoom" />
+      <Association Name="KotUser_Room" Member="Rooms" ThisKey="ID" OtherKey="UserId" Type="Room" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Reviews" Member="Reviews">
+    <Type Name="Review">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RoomId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Placed" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Message" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
+      <Association Name="KotUser_Review" Member="KotUser" ThisKey="UserId" OtherKey="ID" Type="KotUser" IsForeignKey="true" />
+      <Association Name="Room_Review" Member="Room" ThisKey="RoomId" OtherKey="ID" Type="Room" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.RoomImages" Member="RoomImages">
+    <Type Name="RoomImage">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ImageName" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="[Index]" Member="Index" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RoomId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="Room_RoomImage" Member="Room" ThisKey="RoomId" OtherKey="ID" Type="Room" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Types" Member="Types">
+    <Type Name="Type">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="Type_Room" Member="Rooms" ThisKey="ID" OtherKey="TypeId" Type="Room" />
+    </Type>
+  </Table>
+  <Table Name="dbo.GentRegions" Member="GentRegions">
+    <Type Name="GentRegion">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="GentRegion_Room" Member="Rooms" ThisKey="ID" OtherKey="RegionId" Type="Room" />
+    </Type>
+  </Table>
+  <Table Name="dbo.GentRegions" Member="GentRegion1s">
+    <Type Name="GentRegion1">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="GentRegion1_Room" Member="Rooms" ThisKey="ID" OtherKey="RegionId" Type="Room" />
+    </Type>
+  </Table>
+  <Table Name="dbo.RoomHasAttributes" Member="RoomHasAttributes">
+    <Type Name="RoomHasAttribute">
+      <Column Name="RoomID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="AttributeId" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Quantity" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Comments" Type="System.String" DbType="VarChar(255)" CanBeNull="true" />
+      <Association Name="Attribute_RoomHasAttribute" Member="Attribute" ThisKey="RoomID" OtherKey="ID" Type="Attribute" IsForeignKey="true" />
+      <Association Name="Room_RoomHasAttribute" Member="Room" ThisKey="RoomID" OtherKey="ID" Type="Room" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Attributes" Member="Attributes">
+    <Type Name="Attribute">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="Attribute_RoomHasAttribute" Member="RoomHasAttributes" ThisKey="ID" OtherKey="RoomID" Type="RoomHasAttribute" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Schools" Member="Schools">
+    <Type Name="School">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Address" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.UserSavesRoom" Member="UserSavesRooms">
+    <Type Name="UserSavesRoom">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RoomId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="DateSaved" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="KotUser_UserSavesRoom" Member="KotUser" ThisKey="UserId" OtherKey="ID" Type="KotUser" IsForeignKey="true" />
+      <Association Name="Room_UserSavesRoom" Member="Room" ThisKey="UserId" OtherKey="ID" Type="Room" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Rooms" Member="Rooms">
+    <Type Name="Room">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Size" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Address" Type="System.String" DbType="VarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="Location" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Decsription" Type="System.String" DbType="Text" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="TypeId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Price" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
+      <Column Name="Included" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Telephone" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="Lat" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
+      <Column Name="Long" Type="System.Double" DbType="Float NOT NULL" CanBeNull="false" />
+      <Column Name="Added" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="RegionId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="AltCity" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Association Name="Room_Review" Member="Reviews" ThisKey="ID" OtherKey="RoomId" Type="Review" />
+      <Association Name="Room_RoomImage" Member="RoomImages" ThisKey="ID" OtherKey="RoomId" Type="RoomImage" />
+      <Association Name="Room_RoomHasAttribute" Member="RoomHasAttributes" ThisKey="ID" OtherKey="RoomID" Type="RoomHasAttribute" />
+      <Association Name="Room_UserSavesRoom" Member="UserSavesRooms" ThisKey="ID" OtherKey="UserId" Type="UserSavesRoom" />
+      <Association Name="GentRegion_Room" Member="GentRegion" ThisKey="RegionId" OtherKey="ID" Type="GentRegion" IsForeignKey="true" />
+      <Association Name="GentRegion1_Room" Member="GentRegion1" ThisKey="RegionId" OtherKey="ID" Type="GentRegion1" IsForeignKey="true" />
+      <Association Name="Type_Room" Member="Type" ThisKey="TypeId" OtherKey="ID" Type="Type" IsForeignKey="true" />
+      <Association Name="KotUser_Room" Member="KotUser" ThisKey="UserId" OtherKey="ID" Type="KotUser" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>

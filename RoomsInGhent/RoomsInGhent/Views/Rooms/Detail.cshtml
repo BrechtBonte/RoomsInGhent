@@ -1,0 +1,180 @@
+﻿@{
+    RoomsInGhent.Models.Room room = ViewBag.Room;
+    ViewBag.Title = room.Address;
+}
+@section ExtraHeader {
+    <style>
+        span#price-badge {
+            font-size: 21px;
+            -webkit-border-radius: 20px;
+            -moz-border-radius: 20px;
+            border-radius: 20px;
+            padding: 4px 15px;
+        }
+        #smallImgs > figure {
+            margin: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="row">
+    <ul class="breadcrumb pull-left">
+        <li>@Html.ActionLink("Koten", "Index", "Rooms")<span class="divider">/</span></li>
+        <li>@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)<span class="divider">/</span></li>
+        <li class="active">@room.Address</li>
+    </ul>
+</div>
+
+<div class="row">
+
+    <!-- Images -->
+    <div class="span3">
+        <figure id="bigImg">
+            <img alt="selected picture" />
+        </figure>
+        <div id="smallImgs">
+            @foreach (string image in room.GetImages()) {
+                <figure class="span1">
+                    <img src="~/content/files/imgs/@image" alt="small image" />
+                </figure>
+            }
+        </div>
+    </div>
+    <!-- end images -->
+
+    <!-- Info -->
+    <div class="span5">
+        @if (room.Included) {
+            <span id="price-badge" class="badge badge-success pull-right" title="kosten inbegrepen">@room.Price&euro;</span>
+        } else {
+            <span id="price-badge" class="badge badge-warning pull-right" title="kosten niet inbegrepen">@room.Price&euro;</span>
+        }
+        <address>
+            <strong>@room.Address</strong><br />
+            @if (room.AltCity == null || room.AltCity.IsEmpty()) {
+                <text>9000 Gent</text>
+            } else {
+                <text>@room.AltCity</text>
+            }
+        </address>
+        @if (Request.IsAuthenticated) {
+            if(room.IsReserved()) {
+                if (room.ReservedBy(User.Identity.Name)) {
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-info" href="@Url.Action("Detail", "Rooms", new { id = room.ID, unreserve = true })">Loslaten</a>
+                        <a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><p>nog <span class="countdown" data-since="@room.GetLastReservationDateString()"></span> resterend</p></li>
+                        </ul>
+                    </div>
+                } else {
+                    <a class="btn btn-inverse pull-right disabled" href="#">Vastgezet</a>
+                }
+            } else {
+                <a class="btn btn-primary pull-right" href="@Url.Action("Detail", "Rooms", new { id = room.ID, reserve = true })">Vastzetten</a>
+            }
+        }
+        <h4>Type</h4>
+        <p>@room.GetTypeName()</p>
+        <h4>Size</h4>
+        <p>@{Write(room.Size);}m²</p>
+        @if (room.Location != null) {
+            <h4>Ligging</h4>
+            foreach (string line in room.Location.Split('\n')) {
+                <p>@line</p>
+            }
+        }
+        @if(room.Decsription != null) {
+            <h4>Beschrijving</h4>
+            foreach (string line in room.Decsription.Split('\n')) {
+                <p>@line</p>
+            }
+        }
+        <h4>Eigenschappen</h4>
+        <ul>
+            @foreach (RoomsInGhent.Models.RoomHasAttribute attr in room.GetAttributes()) {
+                <li>
+                    <p class="attr-name">@Html.ActionLink(string.Format("{0}{1}", attr.GetAttributeName(), attr.Quantity != null? string.Format(" ({0})",attr.Quantity) : ""), "Index", "Rooms", new { attributes = new int[] { attr.AttributeId } }, null)</p>
+                    @if (attr.Comments != null) { <p class="attr-description">@attr.Comments</p> }
+                </li>
+            }
+        </ul>
+    </div>
+    <!-- End Info -->
+
+    <!-- Right -->
+    <div class="span4">
+
+        <!-- Contact -->
+        <div class="well">
+            <h3>Contact Gegevens</h3>
+            @if(!room.IsReserved() || (Request.IsAuthenticated && room.ReservedBy(User.Identity.Name))) {
+                <address>
+                    <abbr title="Email adres">E:</abbr> <a href="mailto:@room.Email">@room.Email</a><br />
+                    <abbr title="Telefoon nummer">T:</abbr> @room.Telephone
+                </address>
+            } else {
+                <p>Dit kot is nog <span class="countdown" data-since="@room.GetLastReservationDateString()"></span> vast gezet door een andere gebruiker</p>
+            }
+        </div>
+        <!-- End Contact -->
+
+        <!-- User -->
+        <div class="related">
+            <h4>Andere koten van @Html.ActionLink(room.KotUser.Username, "Index", "Users", new { id = room.UserId }, null)</h4>
+            @foreach (RoomsInGhent.Models.Room uRoom in room.KotUser.GetRooms(room.ID, room.Price)) {
+                <article class="room-small row">
+                    <a href="@Url.Action("Detail", "Rooms", new { id = uRoom.ID })">
+                        <figure class="span1">
+                            <img src="~/Content/files/imgs/@uRoom.GetMainImage()" alt="kot foto" />
+                        </figure>
+                    </a>
+                    <div class="room-info">
+                        <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", uRoom.Size), "Index", "Rooms", new { minSize = uRoom.Size - 2, maxSize = uRoom.Size + 2 }, null)</p>
+                        <p class="room-address">@uRoom.Address</p>
+                        <p class="room-region">@Html.ActionLink(uRoom.GetRegion(), "Index", "Rooms", new { regionId = uRoom.RegionId }, null)</p>
+                        <p class="room-price">
+                            @if(uRoom.Included) {
+                                <span class="badge badge-success pull-right" title="kosten inbegrepen">@uRoom.Price€</span>
+                            } else {
+                                <span class="badge badge-warning pull-right" title="kosten niet inbegrepen">@uRoom.Price€</span>
+                            }
+                        </p>
+                    </div>
+                    @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = uRoom.ID }, new { @class = "room-more" })
+                </article>
+            }
+        </div>
+        <!-- End User -->
+
+        <!-- Region -->
+        <div class="related">
+            <h4>Andere koten in deze @Html.ActionLink("region", "Index", "Rooms", new { regionId = room.RegionId }, null)</h4>
+            @foreach (RoomsInGhent.Models.Room uRoom in room.GetRelated()) {
+                <article class="room-small row">
+                    <a href="@Url.Action("Detail", "Rooms", new { id = uRoom.ID })">
+                        <figure class="span1">
+                            <img src="~/Content/files/imgs/@uRoom.GetMainImage()" alt="kot foto" />
+                        </figure>
+                    </a>
+                    <div class="room-info">
+                        <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", uRoom.Size), "Index", "Rooms", new { minSize = uRoom.Size - 2, maxSize = uRoom.Size + 2 }, null)</p>
+                        <p class="room-address">@uRoom.Address</p>
+                        <p class="room-region">@Html.ActionLink(uRoom.GetRegion(), "Index", "Rooms", new { regionId = uRoom.RegionId }, null)</p>
+                        <p class="room-price">
+                            @if(uRoom.Included) {
+                                <span class="badge badge-success pull-right" title="kosten inbegrepen">@uRoom.Price€</span>
+                            } else {
+                                <span class="badge badge-warning pull-right" title="kosten niet inbegrepen">@uRoom.Price€</span>
+                            }
+                        </p>
+                    </div>
+                    @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = uRoom.ID }, new { @class = "room-more" })
+                </article>
+            }
+        </div>
+        <!-- End Region -->
+    </div>
+    <!-- End Right -->
+</div>

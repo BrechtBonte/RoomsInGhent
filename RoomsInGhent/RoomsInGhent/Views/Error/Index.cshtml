@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "Fout";
+}
+
+<div class="page-header">
+    <h1>Er is een fout opgetreden</h1>
+</div>
+
+<div class="row">
+
+    <!-- Error -->
+    <div class="span8">
+        <h3>@ViewBag.Title</h3>
+        @foreach (string line in ViewBag.Message.Split('\n')) {
+            <p>@Html.Raw(line)</p>
+        }
+    </div>
+    <!-- End Error -->
+
+    <!-- Sidebar -->
+    <div class="span4">
+        <div class="well">
+            @if (!Request.IsAuthenticated) {
+                <p>U bent momenteel niet ingelogd</p>
+                @Html.ActionLink("Log in", "Index", "Login", null, new { @class = "btn btn-primary" })
+            } else {
+                <p>U heeft @ViewBag.ReservedCount @Html.ActionLink(ViewBag.ReservedCount == 1? "kot" : "koten", "Index", "Users", new { id = User.Identity.Name }, null) gereserveerd</p>
+                if (ViewBag.ReservedCount > 0) {
+                    <p>De @Html.ActionLink("eerste", "Detail", "Rooms", new { id = ViewBag.FirstId }, null) verloopt na <span class="countdown" data-since="@ViewBag.Since"></span></p>
+                }
+            }
+        </div>
+        <section id="recent_rooms">
+            <h4>@Html.ActionLink("Recente", "Index", "Rooms", new { ignore = true }, null) Koten</h4>
+            @foreach (RoomsInGhent.Models.Room room in ViewBag.Recent) {
+                <article class="room-small row">
+                    <a href="@Url.Action("Detail", "Rooms", new { id = room.ID })">
+                        <figure class="span1">
+                            <img src="~/Content/files/imgs/@room.GetMainImage()" alt="kot foto" />
+                        </figure>
+                    </a>
+                    <div class="room-info">
+                        <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", room.Size), "Index", "Rooms", new { minSize = room.Size - 2, maxSize = room.Size + 2 }, null)</p>
+                        <p class="room-address">@room.Address</p>
+                        <p class="room-region">@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)</p>
+                        <p class="room-price">
+                            @if (room.Included) {
+                                <span class="badge badge-success pull-right" title="kosten inbegrepen">@room.Price€</span>
+                            } else {
+                                <span class="badge badge-warning pull-right" title="kosten niet inbegrepen">@room.Price€</span>
+                            }
+                        </p>
+                    </div>
+                    @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = room.ID }, new { @class = "room-more" })
+                </article>
+            }
+        </section>
+    </div>
+    <!-- End Sidebar -->
+
+</div>

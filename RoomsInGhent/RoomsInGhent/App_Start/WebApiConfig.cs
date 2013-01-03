@@ -8,8 +8,8 @@ namespace RoomsInGhent {
         public static void Register(HttpConfiguration config) {
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                routeTemplate: "api/{controller}/{action}/{par1}/{par2}/{par3}",
+                defaults: new { par1 = RouteParameter.Optional, par2 = RouteParameter.Optional, par3 = RouteParameter.Optional }
             );
         }
     }

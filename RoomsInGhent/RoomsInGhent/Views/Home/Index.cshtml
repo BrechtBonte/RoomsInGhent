@@ -1,0 +1,91 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+@section ExtraHeader {
+    <script src="~/Content/core/js/maps.js"></script>
+    <style> div#map_canvas { height: 400px; } </style>
+}
+
+<div class="row">
+
+    <!-- About -->
+    <div class="span8">
+        <h4>Over deze site</h4>
+        <p>Hier bij Gentse koten proberen wij onze gebruikers een makkelijke manier aan te bieden om koten te bekijken, en dit te doen op een website die aanvoelt als een tweede thuis.</p>
+        <p>@Html.ActionLink("Meer over ons", "About", "Home")</p>
+    </div>
+    <!-- End About -->
+
+    <!-- Userside -->
+    <div class="span4">
+        <div class="well">
+            @if (!Request.IsAuthenticated) {
+                <p>U bent momenteel niet ingelogd</p>
+                @Html.ActionLink("Log in", "Index", "Login", null, new { @class = "btn btn-primary" })
+            } else {
+                <p>U heeft @ViewBag.ReservedCount @Html.ActionLink(ViewBag.ReservedCount == 1? "kot" : "koten", "Index", "Users", new { id = User.Identity.Name }, null) gereserveerd</p>
+                if (ViewBag.ReservedCount > 0) {
+                    <p>De @Html.ActionLink("eerste", "Detail", "Rooms", new { id = ViewBag.FirstId }, null) verloopt na <span class="countdown" data-since="@ViewBag.Since"></span></p>
+                }
+            }
+        </div>
+    </div>
+    <!-- End Userside -->
+
+</div>
+
+<section class="row">
+
+    <!-- Map -->
+    <div class="span8">
+        <div id="map_canvas" class="well"></div>
+    </div>
+    <!-- End Map -->
+
+    <!-- Nav -->
+    <div class="span4">
+        <div class="well">
+            <select id="schoolSel">
+                <option value="-1">- Selecteer een school -</option>
+                @foreach (RoomsInGhent.Models.School school in ViewBag.Schools) {
+                    <option value="@school.Address">@school.Name</option>
+                }
+            </select>
+            <input type="text" id="addresInp" />
+        </div>
+        <div id="recent_rooms">
+            <h4>@Html.ActionLink("Recente", "Index", "Rooms", new { ignore = true }, null) Koten</h4>
+            @foreach (RoomsInGhent.Models.Room room in ViewBag.Recent) {
+                <article class="room-small row">
+                    <a href="@Url.Action("Detail", "Rooms", new { id = room.ID })">
+                        <figure class="span1">
+                            <img src="~/Content/files/imgs/@room.GetMainImage()" alt="kot foto" />
+                        </figure>
+                    </a>
+                    <div class="room-info">
+                        <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", room.Size), "Index", "Rooms", new { minSize = room.Size - 2, maxSize = room.Size + 2 }, null)</p>
+                        <p class="room-address">@room.Address</p>
+                        <p class="room-region">@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)</p>
+                        <p class="room-price">
+                            @if (room.Included) {
+                                <span class="badge badge-success pull-right" title="kosten inbegrepen">@room.Price€</span>
+                            } else {
+                                <span class="badge badge-warning pull-right" title="kosten niet inbegrepen">@room.Price€</span>
+                            }
+                        </p>
+                    </div>
+                    @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = room.ID }, new { @class = "room-more" })
+                </article>
+            }
+        </div>
+        <div id="found_rooms" style="display:none">
+            <h4>Koten in uw buurt</h4>
+            <div id="fRooms"></div>
+        </div>
+    </div>
+    <!-- End Nav -->
+
+</section>
+
+<h2>Index</h2>

@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Over ons";
+}
+
+<div class="page-header">
+    <h1>Over ons</h1>
+</div>
+
+<div class="row">
+
+    <!-- About -->
+    <div class="span8">
+        <p>Hier bij Gentse koten proberen wij onze gebruikers een makkelijke manier aan te bieden om koten te bekijken, en dit te doen op een website die aanvoelt als een tweede thuis.</p>
+        <p>Vindt u hier het kot niet dat u nodig hebt, dan vindt u het hoogstwaarschijnlijk niet snel ergens anders. Jazeker, hier bij Gentse koten staan wij garant voor het poogen tot aanbieden van een groot aantal diverse koten.</p>
+        <h4>Geschiedenis</h4>
+        <p>De historie van Gentse koten dateerd nog van in de middeleeuwen, wanneer een selecte groep monikken een primitieve versie van het internet uitvonden, en deze prompt gebruikten voor het aanbieden van leegstande kamers in hun huis. Gezien deze vorm van het internet bestond uit een aantal monikken die dagelijks hun ronde maakten met geupdate perkamenten was de voorpagina lang niet zo interactief.</p>
+        <p>Sindsdien is het internet al ver gevorderd wat Gentse koten heeft in staat gesteld uit te groeien tot de site die hij nu is. Een vaak voorkomend misverstand is dat deze website dient om koten aan te bieden. Dit is echter enkel het gedeelte van de site die nodig is om deze online te kunnen houden. Onze passie ligt ergens eerder bij mensen sensibiliseren over enkele quotes van Samuel L. Jackson.</p>
+        <div class="offset1">
+            <p>Now that we know who you are, I know who I am. I'm not a mistake! It all makes sense! In a comic, you know how you can tell who the arch-villain's going to be? He's the exact opposite of the hero. And most times they're friends, like you and me! I should've known way back when... You know why, David? Because of the kids. They called me Mr Glass.</p>
+            <p>Now that there is the Tec-9, a crappy spray gun from South Miami. This gun is advertised as the most popular gun in American crime. Do you believe that shit? It actually says that in the little book that comes with it: the most popular gun in American crime. Like they're actually proud of that shit. </p>
+            <p>Your bones don't break, mine do. That's clear. Your cells react to bacteria and viruses differently than mine. You don't get sick, I do. That's also clear. But for some reason, you and I react the exact same way to water. We swallow it too fast, we choke. We get some in our lungs, we drown. However unreal it may seem, we are connected, you and I. We're on the same curve, just on opposite ends.</p>
+        </div>
+        <h4>Genoeg van deze droge tekst?</h4>
+        @Html.ActionLink("Zoek een kot", "Index", "Rooms", new { @class = "btn btn-primary" })
+    </div>
+    <!-- End About -->
+
+    <!-- Sidebar -->
+    <div class="span4">
+        <div class="well">
+            @if (!Request.IsAuthenticated) {
+                <p>U bent momenteel niet ingelogd</p>
+                @Html.ActionLink("Log in", "Index", "Login", null, new { @class = "btn btn-primary" })
+            } else {
+                <p>U heeft @ViewBag.ReservedCount @Html.ActionLink(ViewBag.ReservedCount == 1? "kot" : "koten", "Index", "Users", new { id = User.Identity.Name }, null) gereserveerd</p>
+                if (ViewBag.ReservedCount > 0) {
+                    <p>De @Html.ActionLink("eerste", "Detail", "Rooms", new { id = ViewBag.FirstId }, null) verloopt na <span class="countdown" data-since="@ViewBag.Since"></span></p>
+                }
+            }
+        </div>
+        <section id="recent_rooms">
+            <h4>@Html.ActionLink("Recente", "Index", "Rooms", new { ignore = true }, null) Koten</h4>
+            @foreach (RoomsInGhent.Models.Room room in ViewBag.Recent) {
+                <article class="room-small row">
+                    <a href="@Url.Action("Detail", "Rooms", new { id = room.ID })">
+                        <figure class="span1">
+                            <img src="~/Content/files/imgs/@room.GetMainImage()" alt="kot foto" />
+                        </figure>
+                    </a>
+                    <div class="room-info">
+                        <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", room.Size), "Index", "Rooms", new { minSize = room.Size - 2, maxSize = room.Size + 2 }, null)</p>
+                        <p class="room-address">@room.Address</p>
+                        <p class="room-region">@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)</p>
+                        <p class="room-price">
+                            @if (room.Included) {
+                                <span class="badge badge-success pull-right" title="kosten inbegrepen">@room.Price€</span>
+                            } else {
+                                <span class="badge badge-warning pull-right" title="kosten niet inbegrepen">@room.Price€</span>
+                            }
+                        </p>
+                    </div>
+                    @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = room.ID }, new { @class = "room-more" })
+                </article>
+            }
+        </section>
+    </div>
+    <!-- End Sidebar -->
+
+</div>
