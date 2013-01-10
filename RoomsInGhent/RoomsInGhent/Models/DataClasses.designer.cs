@@ -45,9 +45,6 @@ namespace RoomsInGhent.Models
     partial void InsertGentRegion(GentRegion instance);
     partial void UpdateGentRegion(GentRegion instance);
     partial void DeleteGentRegion(GentRegion instance);
-    partial void InsertGentRegion1(GentRegion1 instance);
-    partial void UpdateGentRegion1(GentRegion1 instance);
-    partial void DeleteGentRegion1(GentRegion1 instance);
     partial void InsertRoomHasAttribute(RoomHasAttribute instance);
     partial void UpdateRoomHasAttribute(RoomHasAttribute instance);
     partial void DeleteRoomHasAttribute(RoomHasAttribute instance);
@@ -132,14 +129,6 @@ namespace RoomsInGhent.Models
 			get
 			{
 				return this.GetTable<GentRegion>();
-			}
-		}
-		
-		public System.Data.Linq.Table<GentRegion1> GentRegion1s
-		{
-			get
-			{
-				return this.GetTable<GentRegion1>();
 			}
 		}
 		
@@ -1093,120 +1082,6 @@ namespace RoomsInGhent.Models
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.GentRegions")]
-	public partial class GentRegion1 : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _ID;
-		
-		private string _Name;
-		
-		private EntitySet<Room> _Rooms;
-		
-    #region Extensibility Method Definitions
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIDChanging(int value);
-    partial void OnIDChanged();
-    partial void OnNameChanging(string value);
-    partial void OnNameChanged();
-    #endregion
-		
-		public GentRegion1()
-		{
-			this._Rooms = new EntitySet<Room>(new Action<Room>(this.attach_Rooms), new Action<Room>(this.detach_Rooms));
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ID", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int ID
-		{
-			get
-			{
-				return this._ID;
-			}
-			set
-			{
-				if ((this._ID != value))
-				{
-					this.OnIDChanging(value);
-					this.SendPropertyChanging();
-					this._ID = value;
-					this.SendPropertyChanged("ID");
-					this.OnIDChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Name", DbType="VarChar(50) NOT NULL", CanBeNull=false)]
-		public string Name
-		{
-			get
-			{
-				return this._Name;
-			}
-			set
-			{
-				if ((this._Name != value))
-				{
-					this.OnNameChanging(value);
-					this.SendPropertyChanging();
-					this._Name = value;
-					this.SendPropertyChanged("Name");
-					this.OnNameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="GentRegion1_Room", Storage="_Rooms", ThisKey="ID", OtherKey="RegionId")]
-		public EntitySet<Room> Rooms
-		{
-			get
-			{
-				return this._Rooms;
-			}
-			set
-			{
-				this._Rooms.Assign(value);
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_Rooms(Room entity)
-		{
-			this.SendPropertyChanging();
-			entity.GentRegion1 = this;
-		}
-		
-		private void detach_Rooms(Room entity)
-		{
-			this.SendPropertyChanging();
-			entity.GentRegion1 = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.RoomHasAttributes")]
 	public partial class RoomHasAttribute : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -1903,8 +1778,6 @@ namespace RoomsInGhent.Models
 		
 		private EntityRef<GentRegion> _GentRegion;
 		
-		private EntityRef<GentRegion1> _GentRegion1;
-		
 		private EntityRef<Type> _Type;
 		
 		private EntityRef<KotUser> _KotUser;
@@ -1954,7 +1827,6 @@ namespace RoomsInGhent.Models
 			this._RoomHasAttributes = new EntitySet<RoomHasAttribute>(new Action<RoomHasAttribute>(this.attach_RoomHasAttributes), new Action<RoomHasAttribute>(this.detach_RoomHasAttributes));
 			this._UserSavesRooms = new EntitySet<UserSavesRoom>(new Action<UserSavesRoom>(this.attach_UserSavesRooms), new Action<UserSavesRoom>(this.detach_UserSavesRooms));
 			this._GentRegion = default(EntityRef<GentRegion>);
-			this._GentRegion1 = default(EntityRef<GentRegion1>);
 			this._Type = default(EntityRef<Type>);
 			this._KotUser = default(EntityRef<KotUser>);
 			OnCreated();
@@ -2259,7 +2131,7 @@ namespace RoomsInGhent.Models
 			{
 				if ((this._RegionId != value))
 				{
-					if ((this._GentRegion.HasLoadedOrAssignedValue || this._GentRegion1.HasLoadedOrAssignedValue))
+					if (this._GentRegion.HasLoadedOrAssignedValue)
 					{
 						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
 					}
@@ -2374,40 +2246,6 @@ namespace RoomsInGhent.Models
 						this._RegionId = default(int);
 					}
 					this.SendPropertyChanged("GentRegion");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="GentRegion1_Room", Storage="_GentRegion1", ThisKey="RegionId", OtherKey="ID", IsForeignKey=true)]
-		public GentRegion1 GentRegion1
-		{
-			get
-			{
-				return this._GentRegion1.Entity;
-			}
-			set
-			{
-				GentRegion1 previousValue = this._GentRegion1.Entity;
-				if (((previousValue != value) 
-							|| (this._GentRegion1.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._GentRegion1.Entity = null;
-						previousValue.Rooms.Remove(this);
-					}
-					this._GentRegion1.Entity = value;
-					if ((value != null))
-					{
-						value.Rooms.Add(this);
-						this._RegionId = value.ID;
-					}
-					else
-					{
-						this._RegionId = default(int);
-					}
-					this.SendPropertyChanged("GentRegion1");
 				}
 			}
 		}

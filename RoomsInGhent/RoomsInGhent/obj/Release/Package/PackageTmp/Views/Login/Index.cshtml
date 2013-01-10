@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Login";
+}
+
+<div class="row">
+    <div class="span10 offset1">
+        @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { @class = "form-horizontal well" })) {
+            @model RoomsInGhent.Models.KotUser
+    
+            <fieldset>
+                <legend>Login</legend>
+                <div class="control-group @if(ViewBag.NonExistent){<text>warning</text>} @if(!ViewData.ModelState.IsValidField("Username")){<text>error</text>}">
+                    @Html.LabelFor(u => u.Username, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(u => u.Username, new { @class = "input-xlarge" })
+                        <p class="help-inline">@if (ViewBag.NonExistent) { <text>Er bestaat geen gebruiker met deze gebruikersnaam</text> } else { @Html.ValidationMessageFor(u => u.Username) }</p>
+                    </div>
+                </div>
+                <div class="control-group @if(ViewBag.WrongPass){<text>warning</text>} @if(!ViewData.ModelState.IsValidField("Password")){<text>error</text>}">
+                    @Html.LabelFor(u => u.Password, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(u => u.Password, new { @class = "input-xlarge" })
+                        <p class="help-inline">@if (ViewBag.WrongPass) { <text>Het wachtwoord voor deze gebruiker is verkeerd</text> } else { @Html.ValidationMessageFor(u => u.Password) }</p>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Log In</button>
+                    @Html.ActionLink("Annuleren", "Index", "Home", null, new { @class = "btn" })
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>

@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Register";
+}
+
+<div class="row">
+    <div class="span10 offset1">
+        @using (Html.BeginForm("Register", "Login", FormMethod.Post, new { @class = "form-horizontal well" })) {
+            @model RoomsInGhent.Models.RegistrationUser
+            <fieldset>
+                <legend>Register</legend>
+                <div class="control-group @if(ViewBag.Taken){<text>warning</text>} @if(!ViewData.ModelState.IsValidField("Username")){<text>error</text>}">
+                    @Html.LabelFor(u => u.Username, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(u => u.Username, new { @class = "input-xlarge" })
+                        <p class="help-inline">@if(ViewBag.Taken) {<text>Deze gebruikersnaam is al bezet</text>} else {@Html.ValidationMessageFor(u => u.Username)}</p>
+                    </div>
+                </div>
+                <div class="control-group @if(!ViewData.ModelState.IsValidField("Password")){<text>error</text>}">
+                    @Html.LabelFor(u => u.Password, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(u => u.Password, new { @class = "input-xlarge" })
+                        <p class="help-inline">@Html.ValidationMessageFor(u => u.Password)</p>
+                    </div>
+                </div>
+                <div class="control-group @if(!ViewData.ModelState.IsValidField("RePassword")){<text>error</text>}">
+                    @Html.LabelFor(u => u.RePassword, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.PasswordFor(u => u.RePassword, new { @class = "input-xlarge" })
+                        <p class="help-inline">@Html.ValidationMessageFor(u => u.RePassword)</p>
+                    </div>
+                </div>
+                <div class="control-group @if(!ViewData.ModelState.IsValidField("Email")){<text>error</text>}">
+                    @Html.LabelFor(u => u.Email, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(u => u.Email, new { @class = "input-xlarge" })
+                        <p class="help-inline">@Html.ValidationMessageFor(u => u.Email)</p>
+                    </div>
+                </div>
+                <div class="control-group @if(!ViewData.ModelState.IsValidField("Phone")){<text>error</text>}">
+                    @Html.LabelFor(u => u.Phone, new { @class = "control-label" })
+                    <div class="controls">
+                        @Html.TextBoxFor(u => u.Phone, new { @class = "input-xlarge" })
+                        <p class="help-inline">@Html.ValidationMessageFor(u => u.Phone)</p>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Registreer</button>
+                    @Html.ActionLink("Annuleren", "Index", "Home", null, new { @class = "btn" })
+                </div>
+            </fieldset>
+        }
+    </div>
+</div>

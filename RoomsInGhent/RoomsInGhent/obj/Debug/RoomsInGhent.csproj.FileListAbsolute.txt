@@ -28,3 +28,7 @@ C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\Room
 C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\bin\System.Web.WebPages.Razor.xml
 C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\obj\Debug\RoomsInGhent.dll
 C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\obj\Debug\RoomsInGhent.pdb
+C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\bin\System.Net.Http.dll
+C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\bin\System.Net.Http.WebRequest.dll
+C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\bin\System.Net.Http.xml
+C:\Users\Brecht\Desktop\school\LWebProg\project 2\RoomsInGhent\RoomsInGhent\RoomsInGhent\bin\System.Net.Http.WebRequest.xml

@@ -1,0 +1,169 @@
+﻿@{
+    RoomsInGhent.Models.KotUser user = ViewBag.User;
+    ViewBag.Title = user.Username;
+}
+
+<div class="page-header">
+    <h2>@user.Username</h2>
+</div>
+
+<div class="row">
+    <div class="span4">
+        @if (ViewBag.Edit) {
+            using(Html.BeginForm("Edit", "Users", FormMethod.Post, new { @class = "form-search well" })) {
+                @model RoomsInGhent.Models.KotUser
+                @Html.HiddenFor(u => u.ID)
+                <fieldset>
+                    <legend>Contact Info</legend>
+                    <div class="control-group @if(!ViewData.ModelState.IsValidField("Email")){<text>error</text>}">
+                        @Html.LabelFor(u => u.Email, new { @class = "control-label" })
+                        <div class="controls">
+                            @Html.TextBoxFor(u => u.Email, new { @class = "input" })
+                            <p class="help-block">@Html.ValidationMessageFor(u => u.Email)</p>
+                        </div>
+                    </div>
+                    <div class="control-group @if(!ViewData.ModelState.IsValidField("Phone")){<text>error</text>}">
+                        @Html.LabelFor(u => u.Phone, new { @class = "control-label" })
+                        <div class="controls">
+                            @Html.TextBoxFor(u => u.Phone, new { @class = "input" })
+                            <p class="help-block">@Html.ValidationMessageFor(u => u.Phone)</p>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Opslaan</button>
+                        @Html.ActionLink("Annuleren", "Index", "Users", new { id = user.ID }, new { @class = "btn" })
+                    </div>
+                </fieldset>
+            }
+        } else {
+            <div class="well">
+                <h4>Contact Info</h4>
+                @if ((user.Email != null && !user.Email.IsEmpty()) || (user.Phone != null && !user.Phone.IsEmpty())) {
+                    <address>
+                        @if (user.Email != null && !user.Email.IsEmpty()) {
+                            <abbr title="Email adres">E:</abbr> <a href="mailto:@user.Email">@user.Email</a>
+                        }
+                        @if (user.Phone != null && !user.Phone.IsEmpty()) {
+                            <abbr title="Telefoon nummer">T:</abbr> @user.Phone
+                        }
+                    </address>
+                } else {
+                    <p class="no-info">Deze gebruiker koos ervoor geen info te tonen</p>
+                }
+                @if (Request.IsAuthenticated && user.ID.ToString() == User.Identity.Name) {
+                    @Html.ActionLink("Pas je info aan", "Edit", "Users", new { id = user.ID }, null);
+                }
+            </div>
+        }
+    </div>
+    <div class="span8">
+        @if (Request.IsAuthenticated && user.ID.ToString() == User.Identity.Name) {
+            <div id="reserved-rooms">
+                <h3>Vastgezette koten</h3>
+                @if (ViewBag.ReservedRooms.Count > 0) {
+                    foreach (RoomsInGhent.Models.Room room in ViewBag.ReservedRooms) {
+                        <article class="room clearfix">
+                            <a href="@Url.Action("Detail", "Rooms", new { id = room.ID })">
+                                <figure class="span2">
+                                    <img src="~/Content/files/imgs/@room.GetMainImage()" alt="kot foto" />
+                                </figure>
+                            </a>
+                            <div class="room-info">
+                                <p class="room-user pull-right">@Html.ActionLink(room.KotUser.Username, "Index", "Users", new { id = room.UserId }, null)</p>
+                                <p class="room-type"><strong>@room.GetTypeName()</strong></p>
+                                <p class="room-resting">Nog <span class="countdown" data-since="@room.GetLastReservationDateString()"></span> resterend</p>
+                                <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", room.Size), "Index", "Rooms", new { minSize = room.Size - 2, maxSize = room.Size + 2 }, null)</p>
+                                <p class="room-address">@room.Address</p>
+                                <p class="room-region">@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)</p>
+                            </div>
+                            <div class="row">
+                                <ul class="room-attributes pull-left well well-small inline">
+                                    @foreach (RoomsInGhent.Models.RoomHasAttribute attr in room.GetAttributes(4)) {
+                                        <li>@Html.ActionLink(string.Format("{0}{1}", attr.GetAttributeName(), attr.Quantity != null? string.Format(" ({0})",attr.Quantity) : ""), "Index", "Rooms", new { attributes = new int[] { attr.AttributeId } }, null)</li>
+                                    }
+                                </ul>
+                            </div>
+                            <p class="room-price pull-right">
+                                @if (room.Included) {
+                                    <span class="badge badge-success" title="kosten inbegrepen">@room.Price€</span>
+                                } else {
+                                    <span class="badge badge-warning" title="kosten niet inbegrepen">@room.Price€</span>
+                                }
+                            </p>
+                            @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = room.ID }, new { @class = "room-more offset2" })
+                        </article>
+                    }
+                } else {
+                    <p class="no-info">U heeft geen koten vast gezet</p>
+                    @Html.ActionLink("Koten vastleggen", "Index", "Rooms", new { @class = "btn btn-primary" })
+                }
+            </div>
+        }
+        <div id="advertised-rooms">
+            <h3>Aangeboden koten</h3>
+            @if (ViewBag.Advertised.Count > 0) {
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="#">Sorteer volgens </a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">@ViewBag.Sort.ToString() <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            @foreach (RoomsInGhent.Models.RoomSorts sort in ViewBag.Sorts) {
+                                <li>@Html.ActionLink(sort.ToString(), "Index", "Users", new { id = user.ID, @sort = sort, reversed = ViewBag.Reversed }, null)</li>
+                            }
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">@if (ViewBag.Reversed) { <text>Gekeerd</text> } else { <text>Normaal</text> }<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Normaal", "Index", "Users", new { id = user.ID, sort = ViewBag.Sort, reversed = false }, null)</li>
+                            <li>@Html.ActionLink("Gekeerd", "Index", "Users", new { id = user.ID, sort = ViewBag.Sort, reversed = true }, null)</li>
+                        </ul>
+                    </li>
+                </ul>
+                foreach (RoomsInGhent.Models.Room room in ViewBag.Advertised) {
+                        <article class="room clearfix">
+                            <a href="@Url.Action("Detail", "Rooms", new { id = room.ID })">
+                                <figure class="pull-left span2">
+                                    <img src="~/Content/files/imgs/@room.GetMainImage()" alt="kot foto" />
+                                </figure>
+                            </a>
+                            <div class="room-info">
+                                <p class="room-user pull-right">@Html.ActionLink(room.KotUser.Username, "Index", "Users", new { id = room.UserId }, null)</p>
+                                <p class="room-type"><strong>@room.GetTypeName()</strong></p>
+                                <p class="room-size pull-right">@Html.ActionLink(string.Format("{0}m²", room.Size), "Index", "Rooms", new { minSize = room.Size - 2, maxSize = room.Size + 2 }, null)</p>
+                                <p class="room-address">@room.Address</p>
+                                <p class="room-region">@Html.ActionLink(room.GetRegion(), "Index", "Rooms", new { regionId = room.RegionId }, null)</p>
+                            </div>
+                            <div class="row">
+                                <ul class="room-attributes row pull-left well well-small inline">
+                                    @foreach (RoomsInGhent.Models.RoomHasAttribute attr in room.GetAttributes(4)) {
+                                        <li>@Html.ActionLink(string.Format("{0}{1}", attr.GetAttributeName(), attr.Quantity != null? string.Format(" ({0})",attr.Quantity) : ""), "Index", "Rooms", new { attributes = new int[] { attr.AttributeId } }, null)</li>
+                                    }
+                                </ul>
+                            </div>
+                            <p class="room-price pull-right">
+                                @if (room.Included) {
+                                    <span class="badge badge-success" title="kosten inbegrepen">@room.Price€</span>
+                                } else {
+                                    <span class="badge badge-warning" title="kosten niet inbegrepen">@room.Price€</span>
+                                }
+                            </p>
+                            @Html.ActionLink("Lees Meer", "Detail", "Rooms", new { id = room.ID }, new { @class = "room-more offset2" })
+                        </article>
+                    }
+                    <div class="pagination pagination-centered">
+                        <ul>
+                            <li @if(ViewBag.Page == 1){<text>class="disabled"</text>}>@Html.ActionLink("←", "Index", "Users", new { id = user.ID, sort = ViewBag.Sort, reversed = ViewBag.Reversed }, null)</li>
+                            @foreach (int i in ViewBag.Pages) {
+                                <li @if(i == ViewBag.Page){<text>class="active"</text>}>@Html.ActionLink(i.ToString(), "Index", "Users", new { id = user.ID, sort = ViewBag.Sort, reversed = ViewBag.Reversed, page = i }, null)</li>
+                            }
+                            <li @if(ViewBag.Page == ViewBag.LastPage){<text>class="disabled"</text>}>@Html.ActionLink("→", "Index", "Users", new { id = user.ID, sort = ViewBag.Sort, reversed = ViewBag.Reversed, page = ViewBag.LastPage }, null)</li>
+                        </ul>
+                    </div>
+            } else {
+                <p class="no-info">Deze gebruiker biedt geen koten aan</p>
+                @Html.ActionLink("Andere koten bekijken", "Index", "Rooms", new { @class = "btn btn-primary" })
+            }
+        </div>
+    </div>
+</div>

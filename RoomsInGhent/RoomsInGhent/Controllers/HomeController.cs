@@ -32,8 +32,10 @@ namespace RoomsInGhent.Controllers
                 ViewBag.ReservedCount = user.ReservedCount();
 
                 Room first = user.FirstReserved();
-                ViewBag.FirstId = first.ID;
-                ViewBag.Since = first.GetLastReservationDateString();
+                if (first != null) {
+                    ViewBag.FirstId = first.ID;
+                    ViewBag.Since = first.GetLastReservationDateString();
+                }
             }
 
             ViewBag.Schools = School.GetAll();
@@ -55,8 +57,10 @@ namespace RoomsInGhent.Controllers
                 ViewBag.ReservedCount = user.ReservedCount();
 
                 Room first = user.FirstReserved();
-                ViewBag.FirstId = first.ID;
-                ViewBag.Since = first.GetLastReservationDateString();
+                if (first != null) {
+                    ViewBag.FirstId = first.ID;
+                    ViewBag.Since = first.GetLastReservationDateString();
+                }
             }
 
             ViewBag.Recent = Room.GetFiltered(new FilterObject(), 0, HOME_ROOMS);

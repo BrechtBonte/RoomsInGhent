@@ -46,5 +46,44 @@ namespace RoomsInGhent.Controllers {
             }
         }
 
+        /// <summary>
+        /// Reserve a room
+        /// </summary>
+        /// <param name="username">username of the user</param>
+        /// <param name="password">password for the user</param>
+        /// <param name="roomId">id or the room</param>
+        /// <returns>whether or not the reservation was successfull</returns>
+        public bool Reserve(string username, string password, int roomId) {
+
+            KotUser user = KotUser.GetByUsername(username);
+            if (user == null) {
+                return false;
+            }
+
+            if (!user.CheckPassword(password)) {
+                return false;
+            }
+
+            Room room = Room.GetById(roomId);
+            if (room == null) {
+                return false;
+            }
+
+            if (room.IsReserved()) {
+                return false;
+            }
+
+            if (user.ReservedCount() >= 3) {
+                return false;
+            }
+
+            try {
+                user.Reserve(roomId);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
     }
 }
